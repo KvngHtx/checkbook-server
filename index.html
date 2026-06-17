@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+      <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -142,6 +142,8 @@
       overflow: hidden;
       border: 1px solid rgba(148, 163, 184, 0.6);
       cursor: pointer;
+      touch-action: none;
+      user-select: none;
     }
 
     .swipe-progress {
@@ -234,7 +236,6 @@
       <button class="toggle-btn" data-method="card">Card</button>
     </div>
 
-    <!-- ACH FORM -->
     <div class="form-section active" id="ach-form">
       <div class="field-group">
         <div class="field-label">Routing Number</div>
@@ -257,7 +258,6 @@
       </div>
     </div>
 
-    <!-- CARD FORM -->
     <div class="form-section" id="card-form">
       <div class="field-group">
         <div class="field-label">Card Number</div>
@@ -279,7 +279,7 @@
       </div>
     </div>
 
-    <div class="swipe-container" id="swipe-container">
+    <div class="swipe-container">
       <div class="swipe-track" id="swipe-track">
         <div class="swipe-progress" id="swipe-progress"></div>
         <div class="swipe-thumb" id="swipe-thumb">›</div>
@@ -303,6 +303,7 @@
     let currentMethod = 'ach';
     let isSwiping = false;
     let swipeStartX = 0;
+    let swipeStartLeft = 4;
     let swipeComplete = false;
 
     const amountDisplay = document.getElementById('amount-display');
@@ -312,9 +313,7 @@
     const swipeThumb = document.getElementById('swipe-thumb');
     const swipeProgress = document.getElementById('swipe-progress');
     const swipeLabel = document.getElementById('swipe-label');
-    const swipeContainer = document.getElementById('swipe-container');
 
-    // Toggle ACH / Card
     document.querySelectorAll('.toggle-btn').forEach(btn => {
       btn.addEventListener('click', function () {
         document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
@@ -329,72 +328,66 @@
     });
 
     function updateAmountDisplay() {
-      let amt = '0.00';
-      if (currentMethod === 'ach') {
-        amt = document.getElementById('amount').value || '0.00';
-      } else {
-        amt = document.getElementById('amount-card').value || '0.00';
-      }
+      const amt = currentMethod === 'ach'
+        ? (document.getElementById('amount').value || '0.00')
+        : (document.getElementById('amount-card').value || '0.00');
+
       amountDisplay.textContent = `$${amt}`;
     }
 
     document.getElementById('amount').addEventListener('input', updateAmountDisplay);
     document.getElementById('amount-card').addEventListener('input', updateAmountDisplay);
 
-    // Card formatting
     const cardNumberInput = document.getElementById('card-number');
-    if (cardNumberInput) {
-      cardNumberInput.addEventListener('input', function () {
-        let val = this.value.replace(/\D/g, '');
-        if (val.length > 16) val = val.slice(0, 16);
-        let formatted = '';
-        for (let i = 0; i < val.length; i++) {
-          if (i > 0 && i % 4 === 0) formatted += ' ';
-          formatted += val[i];
-        }
-        this.value = formatted;
-      });
-    }
+    cardNumberInput.addEventListener('input', function () {
+      let val = this.value.replace(/\D/g, '');
+      if (val.length > 16) val = val.slice(0, 16);
+      let formatted = '';
+      for (let i = 0; i < val.length; i++) {
+        if (i > 0 && i % 4 === 0) formatted += ' ';
+        formatted += val[i];
+      }
+      this.value = formatted;
+    });
 
     const expiryInput = document.getElementById('expiry');
-    if (expiryInput) {
-      expiryInput.addEventListener('input', function () {
-        let val = this.value.replace(/\D/g, '');
-        if (val.length > 4) val = val.slice(0, 4);
-        if (val.length >= 2) {
-          val = val.slice(0, 2) + '/' + val.slice(2);
-        }
-        this.value = val;
-      });
-    }
+    expiryInput.addEventListener('input', function () {
+      let val = this.value.replace(/\D/g, '');
+      if (val.length > 4) val = val.slice(0, 4);
+      if (val.length >= 2) val = val.slice(0, 2) + '/' + val.slice(2);
+      this.value = val;
+    });
 
-    // Swipe logic
-    swipeContainer.addEventListener('mousedown', startSwipe);
-    swipeContainer.addEventListener('touchstart', startSwipe);
-    document.addEventListener('mousemove', moveSwipe);
-    document.addEventListener('touchmove', moveSwipe);
-    document.addEventListener('mouseup', endSwipe);
-    document.addEventListener('touchend', endSwipe);
+    swipeTrack.addEventListener('pointerdown', startSwipe);
+    document.addEventListener('pointermove', moveSwipe);
+    document.addEventListener('pointerup', endSwipe);
 
     function startSwipe(e) {
       if (swipeComplete) return;
       isSwiping = true;
-      swipeStartX = (e.touches ? e.touches[0].clientX : e.clientX);
+      swipeStartX = e.clientX;
+      swipeStartLeft = parseFloat(swipeThumb.style.left) || 4;
     }
 
     function moveSwipe(e) {
       if (!isSwiping) return;
-      let currentX = (e.touches ? e.touches[0].clientX : e.clientX);
-      let delta = currentX - swipeStartX;
-      if (delta < 0) delta = 0;
+      e.preventDefault();
 
-      const max = swipeTrack.clientWidth - swipeThumb.clientWidth - 4;
-      if (delta > max) delta = max;
+      const minLeft = 4;
+      const maxLeft = swipeTrack.clientWidth - swipeThumb.clientWidth - 4;
+      const deltaX = e.clientX - swipeStartX;
 
-      swipeThumb.style.left = delta + 'px';
-      swipeProgress.style.width = (delta + swipeThumb.clientWidth / 2) + 'px';
+      let newLeft = swipeStartLeft + deltaX;
+      if (newLeft < minLeft) newLeft = minLeft;
+      if (newLeft > maxLeft) newLeft = maxLeft;
 
-      if (delta >= max) {
+      swipeThumb.style.left = `${newLeft}px`;
+      swipeProgress.style.width = `${newLeft + swipeThumb.clientWidth / 2}px`;
+
+      const ratio = (newLeft - minLeft) / (maxLeft - minLeft);
+      if (ratio >= 0.92) {
+        swipeThumb.style.left = `${maxLeft}px`;
+        swipeProgress.style.width = `${maxLeft + swipeThumb.clientWidth / 2}px`;
         swipeComplete = true;
         isSwiping = false;
         swipeLabel.textContent = 'Processing…';
@@ -434,25 +427,21 @@
       errorMsg.style.display = 'none';
       successMsg.style.display = 'none';
 
-      let paymentData = {};
-
-      if (currentMethod === 'ach') {
-        paymentData = {
-          method: 'ach',
-          routingNumber: document.getElementById('routing-number').value,
-          accountNumber: document.getElementById('account-number').value,
-          accountType: document.getElementById('account-type').value,
-          amount: document.getElementById('amount').value
-        };
-      } else {
-        paymentData = {
-          method: 'card',
-          cardNumber: document.getElementById('card-number').value,
-          expiry: document.getElementById('expiry').value,
-          cvv: document.getElementById('cvv').value,
-          amount: document.getElementById('amount-card').value
-        };
-      }
+      const paymentData = currentMethod === 'ach'
+        ? {
+            method: 'ach',
+            routingNumber: document.getElementById('routing-number').value,
+            accountNumber: document.getElementById('account-number').value,
+            accountType: document.getElementById('account-type').value,
+            amount: document.getElementById('amount').value
+          }
+        : {
+            method: 'card',
+            cardNumber: document.getElementById('card-number').value,
+            expiry: document.getElementById('expiry').value,
+            cvv: document.getElementById('cvv').value,
+            amount: document.getElementById('amount-card').value
+          };
 
       try {
         const response = await fetch(BACKEND_URL, {
@@ -476,7 +465,6 @@
         showError('Connection error. Make sure your backend is running.');
       }
     }
-
-    // Optional helper if you still call this elsewhere
-    function sendPayment(routingNumber, accountNumber, accountType, amount) {
-      fetch(B
+  </script>
+</body>
+</html>
