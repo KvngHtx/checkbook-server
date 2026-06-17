@@ -1,150 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
   <title>Secure Payment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Courier New', monospace;
-      background: #0a0a0a;
-      min-height: 100vh;
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0b1020;
+      color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      min-height: 100vh;
     }
+
     .payment-container {
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
+      background: #111729;
       border-radius: 16px;
-      padding: 40px;
-      max-width: 500px;
-      width: 100%;
+      padding: 24px 20px 28px;
+      width: 360px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      position: relative;
     }
-    .badge {
-      display: inline-block;
-      background: #00A3FF;
-      color: #0a0a0a;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: bold;
-      letter-spacing: 1px;
-      margin-bottom: 20px;
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
     }
-    h1 {
-      color: #ffffff;
-      font-size: 24px;
-      margin-bottom: 8px;
-      letter-spacing: -0.5px;
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
-    .subtitle {
-      color: #666;
-      font-size: 13px;
-      margin-bottom: 30px;
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
     }
+
+    .header-subtitle {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .amount-display {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
     .toggle-group {
       display: flex;
-      gap: 0;
-      margin-bottom: 30px;
-      background: #0a0a0a;
-      border-radius: 8px;
-      padding: 4px;
+      background: #020617;
+      border-radius: 999px;
+      padding: 3px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
     }
+
     .toggle-btn {
       flex: 1;
-      padding: 12px;
       border: none;
       background: transparent;
-      color: #666;
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
-      cursor: pointer;
-      border-radius: 6px;
-      transition: all 0.3s;
-    }
-    .toggle-btn.active {
-      background: #00A3FF;
-      color: #0a0a0a;
-      font-weight: bold;
-    }
-    .form-section { display: none; }
-    .form-section.active { display: block; }
-    .form-group {
-      margin-bottom: 20px;
-    }
-    label {
-      display: block;
-      color: #888;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 6px;
-    }
-    input {
-      width: 100%;
-      padding: 14px 16px;
-      background: #0a0a0a;
-      border: 1px solid #2a2a2a;
-      border-radius: 8px;
-      color: #ffffff;
-      font-family: 'Courier New', monospace;
-      font-size: 15px;
-      transition: border-color 0.3s;
-    }
-    input:focus {
-      outline: none;
-      border-color: #00A3FF;
-    }
-    input::placeholder { color: #444; }
-    .row { display: flex; gap: 12px; }
-    .row .form-group { flex: 1; }
-    .amount-display {
-      text-align: center;
-      padding: 20px;
-      margin: 20px 0;
-      background: #0a0a0a;
-      border-radius: 8px;
-    }
-    .amount-display .label {
-      color: #666;
+      color: #9ca3af;
       font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .amount-display .amount {
-      color: #39FF14;
-      font-size: 36px;
-      font-weight: bold;
-      margin-top: 4px;
-    }
-    .swipe-container {
-      position: relative;
-      margin-top: 30px;
-      background: #0a0a0a;
-      border-radius: 50px;
-      padding: 4px;
+      padding: 6px 0;
+      border-radius: 999px;
       cursor: pointer;
-      user-select: none;
+      transition: all 0.15s ease;
     }
+
+    .toggle-btn.active {
+      background: #0ea5e9;
+      color: #0b1120;
+      font-weight: 600;
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.6);
+    }
+
+    .form-section {
+      display: none;
+      margin-bottom: 16px;
+    }
+
+    .form-section.active {
+      display: block;
+    }
+
+    .field-group {
+      margin-bottom: 10px;
+    }
+
+    .field-label {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 13px;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .field-input:focus {
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
+    }
+
+    .field-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .field-row .field-group {
+      flex: 1;
+    }
+
+    .swipe-container {
+      margin-top: 10px;
+    }
+
     .swipe-track {
       position: relative;
+      background: #020617;
+      border-radius: 999px;
       height: 56px;
-      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      padding: 4px;
       overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      cursor: pointer;
     }
+
     .swipe-progress {
       position: absolute;
-      top: 0;
       left: 0;
-      height: 100%;
-      background: linear-gradient(90deg, #00A3FF, #39FF14);
-      border-radius: 50px;
-      width: 0%;
+      top: 0;
+      bottom: 0;
+      width: 0;
+      background: linear-gradient(90deg, #22c55e, #0ea5e9);
+      border-radius: 999px;
       transition: width 0.1s;
+      z-index: 1;
     }
+
     .swipe-thumb {
       position: absolute;
       top: 4px;
@@ -159,128 +170,125 @@
       font-size: 20px;
       z-index: 2;
       transition: left 0.1s;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      color: #0b1120;
+      font-weight: 700;
     }
+
     .swipe-label {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: #666;
-      font-size: 14px;
-      z-index: 1;
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      text-align: center;
+      font-size: 13px;
+      color: #e5e7eb;
       pointer-events: none;
     }
-    .swipe-label.active { color: #ffffff; }
+
+    .error-msg {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #fecaca;
+      background: rgba(127, 29, 29, 0.4);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: none;
+    }
+
+    .success-msg {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #bbf7d0;
+      background: rgba(22, 101, 52, 0.4);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: none;
+    }
+
     .secure-badge {
+      margin-top: 12px;
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 6px;
-      margin-top: 20px;
-      color: #39FF14;
-      font-size: 12px;
-      letter-spacing: 1px;
+      font-size: 11px;
+      color: #9ca3af;
     }
-    .error-msg {
-      color: #FF00FF;
-      font-size: 12px;
-      margin-top: 10px;
-      text-align: center;
-      display: none;
-    }
-    .success-msg {
-      color: #39FF14;
-      font-size: 12px;
-      margin-top: 10px;
-      text-align: center;
-      display: none;
-    }
-    .card-icons {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-    .card-icons span {
-      color: #444;
-      font-size: 20px;
-    }
-    select {
-      width: 100%;
-      padding: 14px 16px;
-      background: #0a0a0a;
-      border: 1px solid #2a2a2a;
-      border-radius: 8px;
-      color: #ffffff;
-      font-family: 'Courier New', monospace;
-      font-size: 15px;
+
+    .secure-badge span:first-child {
+      font-size: 13px;
     }
   </style>
 </head>
 <body>
   <div class="payment-container">
-    <div class="badge">SECURE DIRECT ENTRY</div>
-    <h1>Complete Payment</h1>
-    <p class="subtitle">Zero friction · No 3DS · Instant confirmation</p>
+    <div class="header">
+      <div class="header-left">
+        <div class="header-title">Secure Payment</div>
+        <div class="header-subtitle">Swipe to authorize your payment</div>
+      </div>
+      <div class="amount-display" id="amount-display">$0.00</div>
+    </div>
 
     <div class="toggle-group">
-      <button class="toggle-btn active" data-method="ach">ACH</button>
+      <button class="toggle-btn active" data-method="ach">Bank (ACH)</button>
       <button class="toggle-btn" data-method="card">Card</button>
     </div>
 
+    <!-- ACH FORM -->
     <div class="form-section active" id="ach-form">
-      <div class="form-group">
-        <label>Routing Number</label>
-        <input type="text" id="routing" placeholder="021000021" maxlength="9" inputmode="numeric">
+      <div class="field-group">
+        <div class="field-label">Routing Number</div>
+        <input id="routing-number" class="field-input" placeholder="123456789" />
       </div>
-      <div class="form-group">
-        <label>Account Number</label>
-        <input type="text" id="account" placeholder="123456789" inputmode="numeric">
+      <div class="field-group">
+        <div class="field-label">Account Number</div>
+        <input id="account-number" class="field-input" placeholder="000123456789" />
       </div>
-      <div class="form-group">
-        <label>Account Type</label>
-        <select id="account-type">
+      <div class="field-group">
+        <div class="field-label">Account Type</div>
+        <select id="account-type" class="field-input">
           <option value="checking">Checking</option>
           <option value="savings">Savings</option>
         </select>
       </div>
+      <div class="field-group">
+        <div class="field-label">Amount (USD)</div>
+        <input id="amount" class="field-input" placeholder="100.00" />
+      </div>
     </div>
 
+    <!-- CARD FORM -->
     <div class="form-section" id="card-form">
-      <div class="card-icons">
-        <span>💳</span>
+      <div class="field-group">
+        <div class="field-label">Card Number</div>
+        <input id="card-number" class="field-input" placeholder="4242 4242 4242 4242" />
       </div>
-      <div class="form-group">
-        <label>Card Number</label>
-        <input type="text" id="card-number" placeholder="4242 4242 4242 4242" maxlength="19" inputmode="numeric">
-      </div>
-      <div class="row">
-        <div class="form-group">
-          <label>Expiry</label>
-          <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" inputmode="numeric">
+      <div class="field-row">
+        <div class="field-group">
+          <div class="field-label">Expiry</div>
+          <input id="expiry" class="field-input" placeholder="MM/YY" />
         </div>
-        <div class="form-group">
-          <label>CVV</label>
-          <input type="text" id="cvv" placeholder="123" maxlength="4" inputmode="numeric">
+        <div class="field-group">
+          <div class="field-label">CVV</div>
+          <input id="cvv" class="field-input" placeholder="123" />
         </div>
       </div>
-    </div>
-
-    <div class="amount-display">
-      <div class="label">Payment Amount</div>
-      <div class="amount" id="display-amount">$99.99</div>
+      <div class="field-group">
+        <div class="field-label">Amount (USD)</div>
+        <input id="amount-card" class="field-input" placeholder="100.00" />
+      </div>
     </div>
 
     <div class="swipe-container" id="swipe-container">
       <div class="swipe-track" id="swipe-track">
         <div class="swipe-progress" id="swipe-progress"></div>
-        <div class="swipe-thumb" id="swipe-thumb">→</div>
+        <div class="swipe-thumb" id="swipe-thumb">›</div>
         <div class="swipe-label" id="swipe-label">Swipe to Pay</div>
       </div>
     </div>
 
     <div class="error-msg" id="error-msg"></div>
-    <div class="success-msg" id="success-msg">✓ Payment Successful</div>
+    <div class="success-msg" id="success-msg">✅ Payment Successful</div>
 
     <div class="secure-badge">
       <span>🔒</span>
@@ -289,51 +297,78 @@
   </div>
 
   <script>
-    const CHECKBOOK_PUBLISHABLE_KEY = '2232bb9013c94fe188903119b66412c0';
-    const BACKEND_URL = 'http://localhost:3000/process-payment';
+    const CHECKBOOK_PUBLISHABLE_KEY = '2232bb9013c94fe18809131b66412c0';
+    const BACKEND_URL = 'https://checkbook-server-82qjqgxjw-kvngswipe.vercel.app/api/process-payment';
 
     let currentMethod = 'ach';
     let isSwiping = false;
     let swipeStartX = 0;
     let swipeComplete = false;
 
-    document.querySelectorAll('.toggle-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        currentMethod = this.dataset.method;
-        document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-        document.getElementById(currentMethod + '-form').classList.add('active');
-        resetSwipe();
-      });
-    });
-
-    document.getElementById('card-number').addEventListener('input', function(e) {
-      let val = this.value.replace(/\D/g, '');
-      if (val.length > 16) val = val.slice(0, 16);
-      let formatted = '';
-      for (let i = 0; i < val.length; i++) {
-        if (i > 0 && i % 4 === 0) formatted += ' ';
-        formatted += val[i];
-      }
-      this.value = formatted;
-    });
-
-    document.getElementById('expiry').addEventListener('input', function(e) {
-      let val = this.value.replace(/\D/g, '');
-      if (val.length > 4) val = val.slice(0, 4);
-      if (val.length >= 2) {
-        val = val.slice(0, 2) + '/' + val.slice(2);
-      }
-      this.value = val;
-    });
-
+    const amountDisplay = document.getElementById('amount-display');
+    const errorMsg = document.getElementById('error-msg');
+    const successMsg = document.getElementById('success-msg');
     const swipeTrack = document.getElementById('swipe-track');
     const swipeThumb = document.getElementById('swipe-thumb');
     const swipeProgress = document.getElementById('swipe-progress');
     const swipeLabel = document.getElementById('swipe-label');
     const swipeContainer = document.getElementById('swipe-container');
 
+    // Toggle ACH / Card
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentMethod = this.dataset.method;
+
+        document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+        document.getElementById(currentMethod + '-form').classList.add('active');
+
+        updateAmountDisplay();
+      });
+    });
+
+    function updateAmountDisplay() {
+      let amt = '0.00';
+      if (currentMethod === 'ach') {
+        amt = document.getElementById('amount').value || '0.00';
+      } else {
+        amt = document.getElementById('amount-card').value || '0.00';
+      }
+      amountDisplay.textContent = `$${amt}`;
+    }
+
+    document.getElementById('amount').addEventListener('input', updateAmountDisplay);
+    document.getElementById('amount-card').addEventListener('input', updateAmountDisplay);
+
+    // Card formatting
+    const cardNumberInput = document.getElementById('card-number');
+    if (cardNumberInput) {
+      cardNumberInput.addEventListener('input', function () {
+        let val = this.value.replace(/\D/g, '');
+        if (val.length > 16) val = val.slice(0, 16);
+        let formatted = '';
+        for (let i = 0; i < val.length; i++) {
+          if (i > 0 && i % 4 === 0) formatted += ' ';
+          formatted += val[i];
+        }
+        this.value = formatted;
+      });
+    }
+
+    const expiryInput = document.getElementById('expiry');
+    if (expiryInput) {
+      expiryInput.addEventListener('input', function () {
+        let val = this.value.replace(/\D/g, '');
+        if (val.length > 4) val = val.slice(0, 4);
+        if (val.length >= 2) {
+          val = val.slice(0, 2) + '/' + val.slice(2);
+        }
+        this.value = val;
+      });
+    }
+
+    // Swipe logic
     swipeContainer.addEventListener('mousedown', startSwipe);
     swipeContainer.addEventListener('touchstart', startSwipe);
     document.addEventListener('mousemove', moveSwipe);
@@ -344,109 +379,79 @@
     function startSwipe(e) {
       if (swipeComplete) return;
       isSwiping = true;
-      const rect = swipeTrack.getBoundingClientRect();
-      const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-      swipeStartX = clientX - rect.left;
+      swipeStartX = (e.touches ? e.touches[0].clientX : e.clientX);
     }
 
     function moveSwipe(e) {
       if (!isSwiping) return;
-      e.preventDefault();
-      const rect = swipeTrack.getBoundingClientRect();
-      const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-      let x = clientX - rect.left - swipeStartX;
-      if (x < 0) x = 0;
-      const maxX = rect.width - 52;
-      if (x > maxX) x = maxX;
-      const percent = (x / maxX) * 100;
-      swipeThumb.style.left = (x + 4) + 'px';
-      swipeProgress.style.width = percent + '%';
-      if (percent > 50) {
-        swipeLabel.textContent = 'Release to Pay';
-        swipeLabel.classList.add('active');
-      } else {
-        swipeLabel.textContent = 'Swipe to Pay';
-        swipeLabel.classList.remove('active');
+      let currentX = (e.touches ? e.touches[0].clientX : e.clientX);
+      let delta = currentX - swipeStartX;
+      if (delta < 0) delta = 0;
+
+      const max = swipeTrack.clientWidth - swipeThumb.clientWidth - 4;
+      if (delta > max) delta = max;
+
+      swipeThumb.style.left = delta + 'px';
+      swipeProgress.style.width = (delta + swipeThumb.clientWidth / 2) + 'px';
+
+      if (delta >= max) {
+        swipeComplete = true;
+        isSwiping = false;
+        swipeLabel.textContent = 'Processing…';
+        processPayment();
       }
     }
 
-    function endSwipe(e) {
-      if (!isSwiping) return;
+    function endSwipe() {
+      if (!isSwiping || swipeComplete) return;
       isSwiping = false;
-      const rect = swipeTrack.getBoundingClientRect();
-      const maxX = rect.width - 52;
-      const thumbLeft = parseInt(swipeThumb.style.left) || 4;
-      const percent = ((thumbLeft - 4) / maxX) * 100;
-      if (percent > 80) {
-        swipeComplete = true;
-        swipeLabel.textContent = 'Processing...';
-        swipeLabel.classList.add('active');
-        processPayment();
-      } else {
-        resetSwipe();
-      }
+      resetSwipe();
     }
 
     function resetSwipe() {
       swipeComplete = false;
       swipeThumb.style.left = '4px';
-      swipeProgress.style.width = '0%';
+      swipeProgress.style.width = '0px';
       swipeLabel.textContent = 'Swipe to Pay';
-      swipeLabel.classList.remove('active');
-      document.getElementById('error-msg').style.display = 'none';
-      document.getElementById('success-msg').style.display = 'none';
+    }
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.style.display = 'block';
+      successMsg.style.display = 'none';
+      resetSwipe();
+    }
+
+    function showSuccess(msg) {
+      successMsg.textContent = msg || '✅ Payment Successful';
+      successMsg.style.display = 'block';
+      errorMsg.style.display = 'none';
+      swipeLabel.textContent = '✓ Paid';
+      setTimeout(() => resetSwipe(), 3000);
     }
 
     async function processPayment() {
-      const errorMsg = document.getElementById('error-msg');
-      const successMsg = document.getElementById('success-msg');
       errorMsg.style.display = 'none';
       successMsg.style.display = 'none';
 
-      let paymentData = {
-        method: currentMethod,
-        amount: 99.99,
-        publishable_key: CHECKBOOK_PUBLISHABLE_KEY
-      };
+      let paymentData = {};
 
       if (currentMethod === 'ach') {
-        const routing = document.getElementById('routing').value.trim();
-        const account = document.getElementById('account').value.trim();
-        const accountType = document.getElementById('account-type').value;
-        
-        if (!routing || routing.length !== 9) {
-          showError('Please enter a valid 9-digit routing number');
-          return;
-        }
-        if (!account) {
-          showError('Please enter an account number');
-          return;
-        }
-        
-        paymentData.routing = routing;
-        paymentData.account = account;
-        paymentData.account_type = accountType;
+        paymentData = {
+          method: 'ach',
+          routingNumber: document.getElementById('routing-number').value,
+          accountNumber: document.getElementById('account-number').value,
+          accountType: document.getElementById('account-type').value,
+          amount: document.getElementById('amount').value
+        };
       } else {
-        const cardNumber = document.getElementById('card-number').value.replace(/\s/g, '');
-        const expiry = document.getElementById('expiry').value;
-        const cvv = document.getElementById('cvv').value;
-        
-        if (!cardNumber || cardNumber.length < 16) {
-          showError('Please enter a valid card number');
-          return;
-        }
-        if (!expiry || expiry.length !== 5) {
-          showError('Please enter a valid expiry date (MM/YY)');
-          return;
-        }
-        if (!cvv || cvv.length < 3) {
-          showError('Please enter a valid CVV');
-          return;
-        }
-        
-        paymentData.card_number = cardNumber;
-        paymentData.expiry = expiry;
-        paymentData.cvv = cvv;
+        paymentData = {
+          method: 'card',
+          cardNumber: document.getElementById('card-number').value,
+          expiry: document.getElementById('expiry').value,
+          cvv: document.getElementById('cvv').value,
+          amount: document.getElementById('amount-card').value
+        };
       }
 
       try {
@@ -460,26 +465,18 @@
         });
 
         const result = await response.json();
-        
+
         if (result.success) {
-          successMsg.style.display = 'block';
-          swipeLabel.textContent = '✓ Paid';
-          setTimeout(() => resetSwipe(), 3000);
+          showSuccess(result.message || '✅ Payment Successful');
         } else {
           showError(result.error || 'Payment failed');
         }
       } catch (error) {
-        showError('Connection error. Make sure your backend is running.');
         console.error('Payment error:', error);
+        showError('Connection error. Make sure your backend is running.');
       }
     }
 
-    function showError(msg) {
-      const errorMsg = document.getElementById('error-msg');
-      errorMsg.textContent = msg;
-      errorMsg.style.display = 'block';
-      resetSwipe();
-    }
-  </script>
-</body>
-</html>
+    // Optional helper if you still call this elsewhere
+    function sendPayment(routingNumber, accountNumber, accountType, amount) {
+      fetch(B
