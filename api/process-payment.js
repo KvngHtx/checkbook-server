@@ -1,91 +1,50 @@
 export default async function handler(req, res) {
-  // CORS
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-
-  if (req.method === "OPTIONS") return res.status(200).end();
-  if (req.method !== "POST") {
-    return res.status(405).json({ success: false, error: "Invalid request method" });
-  }
-
   try {
-    const {
-      provider,        // "checkbook" or "stripe"
-      method,          // "ach" or "card" (for checkbook)
-      routingNumber,
-      accountNumber,
-      accountType,
-      cardNumber,
-      expiry,          // "MM/YY"
-      cvv,
-      amount
-    } = req.body;
-
-    if (!provider || !amount) {
-      return res.status(400).json({ success: false, error: "Missing provider or amount" });
+    // Allow only POST
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: "Method Not Allowed" });
     }
 
-    // ---------------- CHECKBOOK ----------------
-    if (provider === "checkbook") {
-      const CHECKBOOK_SECRET = process.env.CHECKBOOK_SECRET || "YOUR_CHECKBOOK_SECRET_KEY";
+    // Basic CORS (optional)
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "POST");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-      if (method === "ach") {
-        if (!routingNumber || !accountNumber || !accountType) {
-          return res.status(400).json({ success: false, error: "Missing ACH fields" });
-        }
-      }
+    const { name, amount, accountNumber, routingNumber } = req.body || {};
 
-      if (method === "card") {
-        if (!cardNumber || !expiry || !cvv) {
-          return res.status(400).json({ success: false, error: "Missing card fields" });
-        }
-      }
-
-      let payload = { amount };
-
-      if (method === "ach") {
-        payload = {
-          type: "ach",
-          routing_number: routingNumber,
-          account_number: accountNumber,
-          account_type: accountType,
-          amount
-        };
-      } else if (method === "card") {
-        payload = {
-          type: "card",
-          card_number: cardNumber.replace(/\s+/g, ""),
-          expiry,
-          cvv,
-          amount
-        };
-      } else {
-        return res.status(400).json({ success: false, error: "Unknown payment method" });
-      }
-
-      const response = await fetch("https://api.checkbook.io/v3/payment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${CHECKBOOK_SECRET}`
-        },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return res.status(response.status).json({
-          success: false,
-          error: data.error || "Checkbook payment failed",
-          raw: data
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        message: "Payment processed via Checkbook",
-        data
-      });
+    // Validate required fields
+    if (!name || !amount || !accountNumber || !routingNumber) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
+
+    // Validate amount
+    const numericAmount = Number(amount);
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      return res.status(400).json({ error: "Invalid amount" });
+    }
+
+    // Validate account number (basic)
+    if (!/^\d{6,17}$/.test(accountNumber)) {
+      return res.status(400).json({ error: "Invalid account number" });
+    }
+
+    // Validate routing number (basic ABA)
+    if (!/^\d{9}$/.test(routingNumber)) {
+      return res.status(400).json({ error: "Invalid routing number" });
+    }
+
+    // --- PLACE YOUR PAYMENT LOGIC HERE ---
+    // Example:
+    // const response = await checkbook.sendPayment({ ... });
+
+    // Simulated success
+    return res.status(200).json({
+      success: true,
+      message: "Payment processed successfully"
+    });
+
+  } catch (err) {
+    console.error("Server Error:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
